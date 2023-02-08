@@ -1,35 +1,77 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
     public float speed;
+    public Camera followCamera;
+
 
     private Rigidbody m_Rb;
     private GameObject m_Elevator;
     private float m_ElevatorOffsetY;
+    private Vector3 m_CameraPos;
+    private float m_SpeedModifier;
+
     private void Awake()
     {
         m_Rb = GetComponent<Rigidbody>();
+        m_ElevatorOffsetY = 0;
+        m_SpeedModifier = 1;
+
+        m_CameraPos = followCamera.transform.position - m_Rb.position;
     }
-
-
     // Update is called once per frame
     void FixedUpdate()
     {
-        float horizontalInput = Input.GetAxis("Horizontal");
-        float verticalInput = Input.GetAxis("Vertical");
+        float horizontalInput = Input.GetAxis("Horizontal"); //di chuyen theo chieu ngang
+        float verticalInput = Input.GetAxis("Vertical"); //di chuyen theo chieu doc
+
+        Vector3 playerPos = m_Rb.position;
+        Vector3 movement = new Vector3(horizontalInput, 0, verticalInput).normalized;
+
+        if (movement == Vector3.zero)
+        {
+            return;
+        }
+
+        Quaternion targetRotation = Quaternion.LookRotation(movement);
+
+        if (m_Elevator != null)
+        {
+            playerPos.y = m_Elevator.transform.position.y + m_ElevatorOffsetY;
+        }
 
 
-        Vector3 movement = new Vector3(horizontalInput, 0, verticalInput);
+        targetRotation = Quaternion.RotateTowards(
+            transform.rotation,
+            targetRotation,
+            360 * Time.fixedDeltaTime);
 
-        
-        movement.Normalize();
-        
-        transform.Translate(movement * Time.deltaTime * speed);
+        m_Rb.MovePosition(playerPos + movement * m_SpeedModifier * speed * Time.fixedDeltaTime);
+        m_Rb.MoveRotation(targetRotation);
+    }
 
-        m_Rb.MovePosition(m_Rb.position + movement * Time.fixedDeltaTime * speed);
+    private void LateUpdate()
+    {
+        followCamera.transform.position = m_Rb.position + m_CameraPos;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Powerup"))
+        {
+            Destroy(collision.gameObject);
+            m_SpeedModifier = 2;
+            StartCoroutine(BonusSpeedCountdown());
+        }
+    }
+
+    private IEnumerator BonusSpeedCountdown()
+    {
+        yield return new WaitForSeconds(3.0f);
+        m_SpeedModifier = 1;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -37,15 +79,17 @@ public class PlayerController : MonoBehaviour
         if (other.CompareTag("Elevator"))
         {
             m_Elevator = other.gameObject;
-            m_ElevatorOffsetY = transform.position.y - m_Elevator.transform.position.y; 
+            m_ElevatorOffsetY = transform.position.y - m_Elevator.transform.position.y;
         }
+
     }
 
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Elevator"))
         {
-            transform.parent = null;
+            m_Elevator = null;
+            m_ElevatorOffsetY = 0;
         }
     }
 }

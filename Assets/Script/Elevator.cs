@@ -9,28 +9,35 @@ public class Elevator : MonoBehaviour
     private float m_Speed = 5.0f;
 
     private Coroutine m_ReverseCoroutine;
+    private Rigidbody m_Rb;
 
     private IEnumerator Start()
     {
-        enabled= false;
+        m_Rb = GetComponent<Rigidbody>();
+        enabled = false;
         yield return new WaitForSeconds(3.0f);
-        enabled= true;
+        enabled = true;
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        if(m_TravelDistance >= m_MaxTravelDistance)
+        if (m_TravelDistance >= m_MaxTravelDistance)
         {
-            if(m_ReverseCoroutine == null)
+            if (m_ReverseCoroutine == null)
             {
-                m_ReverseCoroutine = StartCoroutine(nameof(ReverseElevator));
+                m_ReverseCoroutine = StartCoroutine(nameof(ReverseElevator)); //Dao nguoc huong di chuyen
             }
-        } else
+        }
+        else
         {
             float distanceStep = m_Speed * Time.fixedDeltaTime;
             m_TravelDistance += Mathf.Abs(distanceStep);
-            transform.Translate(0, distanceStep, 0);
+
+            Vector3 elevatorPos = m_Rb.position;
+            elevatorPos.y += distanceStep;
+
+            m_Rb.MovePosition(elevatorPos);
         }
     }
 
@@ -39,8 +46,8 @@ public class Elevator : MonoBehaviour
         yield return new WaitForSeconds(3.0f);
         m_TravelDistance = 0;
         m_Speed = -m_Speed;
-        m_ReverseCoroutine= null;
+        m_ReverseCoroutine = null;
     }
 
-   
+
 }
