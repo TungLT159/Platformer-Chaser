@@ -350,6 +350,7 @@
 "Assets/Script/PlayerController.cs"
 "Assets/Script/Powerup.cs"
 "Assets/Script/SpawnManager.cs"
+"Assets/Script/Utils.cs"
 -langversion:9.0
 
 /deterministic

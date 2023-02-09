@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+
 public class PlayerController : MonoBehaviour
 {
     public float speed;
@@ -17,6 +19,7 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         m_Rb = GetComponent<Rigidbody>();
+
         m_ElevatorOffsetY = 0;
         m_SpeedModifier = 1;
 
@@ -66,11 +69,18 @@ public class PlayerController : MonoBehaviour
             m_SpeedModifier = 2;
             StartCoroutine(BonusSpeedCountdown());
         }
+
+        if (collision.gameObject.CompareTag("Enemy") && m_SpeedModifier > 1)
+        {
+            Rigidbody enemyRb = collision.gameObject.GetComponent<Rigidbody>();
+            Vector3 awayFromPlayer = collision.transform.position;
+            enemyRb.AddForce(awayFromPlayer * 30.0f, ForceMode.Impulse);
+        }
     }
 
     private IEnumerator BonusSpeedCountdown()
     {
-        yield return new WaitForSeconds(3.0f);
+        yield return new WaitForSeconds(20.0f);
         m_SpeedModifier = 1;
     }
 
