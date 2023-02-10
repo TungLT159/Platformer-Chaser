@@ -1,14 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
-
-
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, IPausable
 {
     public float speed;
     public Camera followCamera;
-
+    public UnityEvent OnPlayerLost;
 
     private Rigidbody m_Rb;
     private GameObject m_Elevator;
@@ -19,15 +18,18 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         m_Rb = GetComponent<Rigidbody>();
-
         m_ElevatorOffsetY = 0;
         m_SpeedModifier = 1;
-
         m_CameraPos = followCamera.transform.position - m_Rb.position;
+        enabled= false;
     }
     // Update is called once per frame
     void FixedUpdate()
     {
+        if(transform.position.y <= -15.0f)
+        {
+            OnPlayerLost.Invoke();
+        }
         float horizontalInput = Input.GetAxis("Horizontal"); //di chuyen theo chieu ngang
         float verticalInput = Input.GetAxis("Vertical"); //di chuyen theo chieu doc
 
@@ -59,6 +61,11 @@ public class PlayerController : MonoBehaviour
     private void LateUpdate()
     {
         followCamera.transform.position = m_Rb.position + m_CameraPos;
+    }
+
+    public void OnGameStart()
+    {
+        enabled= true;
     }
 
     private void OnCollisionEnter(Collision collision)

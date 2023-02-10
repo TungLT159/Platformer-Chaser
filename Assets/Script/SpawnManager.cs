@@ -5,40 +5,61 @@ using UnityEngine;
 public class SpawnManager : MonoBehaviour
 {
     public GameObject enemyPrefab;
+    public GameObject powerupPrefab;
 
     public Vector2 spawnRange;
 
     private int m_EnemyCount;
     private int m_waves;
-    // Start is called before the first frame update
-    void Start()
+
+    private void Awake()
     {
-        m_waves = 1;
-        SpawnEnemy();
+        m_waves= 1;
+        enabled = false; 
     }
 
+ 
     private void Update()
     {
         m_EnemyCount = FindObjectsOfType<EnemyController>().Length;
 
-        if (m_EnemyCount == 0)
+        if (m_EnemyCount == 0)//Neu so luong enemy = 0 thi tao va tang 1 so voi lan truoc do
         {
             m_waves++;
             SpawnEnemy();
+            SpawnPowerup();
         }
     }
 
+    public void StartSpawning()
+    {
+        enabled= true;
+        SpawnEnemy();
+        SpawnPowerup();
+    }
+
+    private void SpawnPowerup()
+    {
+        SpawnEntity(powerupPrefab);
+    }
+
+    //Logic tao Enemy
     private void SpawnEnemy()
     {
         for (var i = 0; i < m_waves; i++)
         {
-            Vector3 spawnPosition = new Vector3(
-            Random.Range(spawnRange[0], spawnRange[1]),
-            enemyPrefab.transform.position.y,
-            Random.Range(spawnRange[0], spawnRange[1]));
-
-            Instantiate(enemyPrefab, spawnPosition, enemyPrefab.transform.rotation);
+            SpawnEntity(enemyPrefab);
         }
     }
 
+    private void SpawnEntity(GameObject entity)
+    {
+        Vector3 spawnPosition = new Vector3(
+           Random.Range(spawnRange[0], spawnRange[1]),
+           enemyPrefab.transform.position.y,
+           Random.Range(spawnRange[0], spawnRange[1]));
+
+        Instantiate(entity, spawnPosition, entity.transform.rotation);
+    }
+         
 }
