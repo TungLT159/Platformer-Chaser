@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
-    public float speed;
-    public float pushRadius;
+    [SerializeField] private float speed;
+    [SerializeField] private float pushRadius;
     private Rigidbody m_Rb;
     private GameObject m_FollowTarget;
     private bool m_IsRecharged;

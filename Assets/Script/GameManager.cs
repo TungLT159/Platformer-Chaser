@@ -6,8 +6,8 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    public GameObject startScreen;
-    public UnityEvent OnGameStart;
+    [SerializeField] private GameObject startScreen;
+    [SerializeField] private UnityEvent OnGameStart;
 
     private SpawnManager m_SpawnManager;
     // Start is called before the first frame update
@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour
         m_SpawnManager = FindObjectOfType<SpawnManager>();
         var elevators = FindObjectsOfType<Elevator>();
 
-        for(int i =0; i< elevators.Length; i++)
+        for (int i = 0; i < elevators.Length; i++)
         {
             OnGameStart.AddListener(elevators[i].OnGameStart);
         }
@@ -29,7 +29,7 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
-        OnGameStart.Invoke();  
+        OnGameStart.Invoke();
         m_SpawnManager.StartSpawning();
         startScreen.SetActive(false);
     }

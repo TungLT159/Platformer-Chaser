@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
-    public GameObject enemyPrefab;
-    public GameObject powerupPrefab;
+    [SerializeField] private GameObject enemyPrefab;
+    [SerializeField] private GameObject powerupPrefab;
 
-    public Vector2 spawnRange;
+    [SerializeField] private Vector2 spawnRange;
 
     private int m_EnemyCount;
     private int m_waves;

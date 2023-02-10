@@ -5,9 +5,9 @@ using UnityEngine.Events;
 
 public class PlayerController : MonoBehaviour, IPausable
 {
-    public float speed;
-    public Camera followCamera;
-    public UnityEvent OnPlayerLost;
+    [SerializeField] private float speed;
+    [SerializeField] private Camera followCamera;
+    [SerializeField] private UnityEvent OnPlayerLost;
 
     private Rigidbody m_Rb;
     private GameObject m_Elevator;
